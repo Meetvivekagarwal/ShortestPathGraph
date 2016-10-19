@@ -1,0 +1,146 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        
+        Scanner in = new Scanner(System.in);
+        
+        int queries = in.nextInt();
+       
+        for(int i=0;i<queries;i++)
+            {
+            ArrayList<Node> arrayList = new  ArrayList<Node>();
+            int noOfNodes = in.nextInt();
+          
+            for(int j=1;j<=noOfNodes;j++)
+                {
+                Node newNode = new Node(j);
+                arrayList.add(newNode);
+            }
+            
+            int noofEdges = in.nextInt();
+          
+            
+            for(int j=0;j<noofEdges;j++)
+                {
+                int source = in.nextInt();
+                
+                int destination = in.nextInt();
+                
+                Node sourceNode = arrayList.get(source -1);
+                Node destinationNode = arrayList.get(destination -1);
+                sourceNode.addedgeNode(destinationNode);
+                destinationNode.addedgeNode(sourceNode);
+                
+            }
+        
+            int startNode = in.nextInt();
+            Node startingNode = arrayList.get(startNode-1);
+            
+            int distance =1;
+            
+            for(Node n : arrayList)
+                {
+                if(n != startingNode)
+                    {
+                    startingNode.visited = true;
+                    Queue<Node> qu = new LinkedList<Node>();
+                    TreeSet<Integer> tree = new TreeSet<Integer>();
+                    addToQueue(qu,startingNode.getConnectedNodes(),startingNode);
+                    
+                    shortestReach(qu,n,tree);
+                    if(tree.isEmpty())
+                        {
+                           System.out.print("-1" + " ");
+                    }
+                    else
+                        {
+                    System.out.print(tree.first()*6 + " ");
+                    }
+                    reset(arrayList);
+                }
+                
+            }
+            System.out.println();
+        }
+        
+    }
+    
+    public static int shortestReach(Queue<Node> qu, Node search,TreeSet<Integer> tree)
+        {
+            
+            Node firstElement = qu.poll();
+                
+        
+            if( firstElement == null)
+                {
+                
+                 return -1;
+            }
+            firstElement.visited = true;
+            if( firstElement == search  )
+                {
+                
+                tree.add(firstElement.distance);
+            }
+            addToQueue(qu,firstElement.getConnectedNodes(),firstElement);
+            
+            return shortestReach(qu,search,tree);
+        }
+    
+
+    public static void addToQueue(Queue<Node> qu, Iterator<Node> iter, Node firstElement )
+        {
+        while(iter.hasNext())
+            {
+            Node n = iter.next();
+            
+            if(!n.visited)
+                {
+            
+            n.distance = firstElement.distance +1;
+            qu.add(n);
+            }
+            
+        }
+        
+    }
+    
+    public static void reset(ArrayList<Node> arr)
+        {
+        for(Node n : arr)
+            {
+            n.visited = false;
+        }
+    }
+ 
+    
+}
+
+ class Node{
+    
+    int value;
+    boolean visited = false;
+    Set<Node> nodeSet = new HashSet<Node>();
+    int distance = 0;
+    
+    public Node(int value)
+        {
+        this.value = value;
+    }
+    
+    public void addedgeNode(Node n)
+        {
+        nodeSet.add(n);
+    }
+    
+    public Iterator<Node> getConnectedNodes()
+        {
+         return nodeSet.iterator();
+    }
+}
