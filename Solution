@@ -1,8 +1,6 @@
-import java.io.*;
+
 import java.util.*;
-import java.text.*;
-import java.math.*;
-import java.util.regex.*;
+
 
 public class Solution {
 
@@ -41,85 +39,67 @@ public class Solution {
         
             int startNode = in.nextInt();
             Node startingNode = arrayList.get(startNode-1);
+         
+      
+            Queue<Node> qu = new LinkedList<Node>();
+            qu.add(startingNode);
             
-            int distance =1;
-            
-            for(Node n : arrayList)
+            int[] minimumDistance = new int[arrayList.size()];
+            int arrayListSize = arrayList.size()+1;
+            for( int j=0;j<minimumDistance.length;j++)
                 {
-                if(n != startingNode)
+                minimumDistance[j] = arrayListSize;
+            }
+            
+            minimumDistance[startNode-1] = 0;
+            
+            while(!qu.isEmpty())
+                {
+                Node selectedNode = qu.poll();
+                if(!selectedNode.visited)
                     {
-                    startingNode.visited = true;
-                    Queue<Node> qu = new LinkedList<Node>();
-                    TreeSet<Integer> tree = new TreeSet<Integer>();
-                    addToQueue(qu,startingNode.getConnectedNodes(),startingNode);
+                        selectedNode.visited = true;
+                        Iterator<Node> iter = selectedNode.getConnectedNodes();
+                        int distance = minimumDistance[selectedNode.value -1];
+                         while(iter.hasNext())
+                            {
+                                Node n = iter.next();
+                                
+                                if(!n.visited) 
+                                     {
+                                        int value = n.value;
+                                        minimumDistance[value -1] = Math.min(minimumDistance[value -1], 1 + distance);
+                                        qu.add(n);
+                                        }
+            
+                            }
                     
-                    shortestReach(qu,n,tree);
-                    if(tree.isEmpty())
-                        {
-                           System.out.print("-1" + " ");
-                    }
-                    else
-                        {
-                    System.out.print(tree.first()*6 + " ");
-                    }
-                    reset(arrayList);
+                    
                 }
                 
             }
-            System.out.println();
-        }
-        
-    }
-    
-    public static int shortestReach(Queue<Node> qu, Node search,TreeSet<Integer> tree)
-        {
             
-            Node firstElement = qu.poll();
-                
-        
-            if( firstElement == null)
-                {
-                
-                 return -1;
-            }
-            firstElement.visited = true;
-            if( firstElement == search  )
-                {
-                
-                tree.add(firstElement.distance);
-            }
-            addToQueue(qu,firstElement.getConnectedNodes(),firstElement);
             
-            return shortestReach(qu,search,tree);
-        }
-    
-
-    public static void addToQueue(Queue<Node> qu, Iterator<Node> iter, Node firstElement )
-        {
-        while(iter.hasNext())
+            for( int j=0;j<minimumDistance.length;j++)
             {
-            Node n = iter.next();
-            
-            if(!n.visited)
-                {
-            
-            n.distance = firstElement.distance +1;
-            qu.add(n);
+            	if(minimumDistance[j] == arrayListSize)
+            	{
+            		minimumDistance[j] = -1;
+            	}
+            	else
+            	{
+            		minimumDistance[j] = minimumDistance[j] * 6;
+            	}
+            if(startNode -1 != j)
+            {
+             System.out.print(minimumDistance[j] + " ");
             }
-            
+        }
+           System.out.println(); 
         }
         
+        in.close();
     }
-    
-    public static void reset(ArrayList<Node> arr)
-        {
-        for(Node n : arr)
-            {
-            n.visited = false;
-        }
-    }
- 
-    
 }
 
  class Node{
